@@ -1,8 +1,9 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import { userModel } from "../db.js";
+import { userModel, courseModel, purchaseModel } from "../db.js";
 import jwt from "jsonwebtoken";
 import { JWT_USER_SECRET } from "../config.js";
+import { userMiddleware } from "../middleware/user.js";
 
 const userRouter = express.Router();
 
@@ -10,6 +11,12 @@ userRouter.post('/signup', async function (req, res) {
   const { email, password, firstName, lastName } = req.body;
 
   try {
+    const User = await userModel.findOne({ email });
+    if (User) {
+      res.status(403).json({
+        message: "user already exists"
+      })
+    }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -59,8 +66,36 @@ userRouter.post('/signin', async function (req, res) {
   }
 })
 
-userRouter.get('/purchases', function (req, res) {
-  res.send('POST request to the homepage')
+userRouter.get("/purcheses", userMiddleware, async function (req, res) {
+  const userId = req.userId;
+
+  try {
+    const purchases = await purchaseModel.find({
+      userId: userId,
+    });
+
+    // Check the length of the array instead of checking if it exists
+    if (purchases.length === 0) {
+      return res.status(404).json({
+        message: "No purchases found",
+      });
+    }
+
+    const purchasesCourseIds = purchases.map((purchase) => purchase.courseId);
+
+    const coursesData = await courseModel.find({
+      _id: { $in: purchasesCourseIds },
+    });
+
+    res.status(200).json({
+      purchases,
+      coursesData,
+    });
+  } catch (error) {
+    res.status(501).json({
+      error: error.message
+    });
+  }
 })
 
 export default userRouter;

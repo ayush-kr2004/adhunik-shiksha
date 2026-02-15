@@ -10,6 +10,12 @@ const adminRouter = express.Router();
 adminRouter.post('/signup', async function (req, res) {
   const { email, password, firstName, lastName } = req.body;
   try {
+    const Admin = await adminModel.findOne({ email });
+    if (Admin) {
+      res.status(403).json({
+        message: "admin already exists"
+      })
+    }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     await adminModel.create({
