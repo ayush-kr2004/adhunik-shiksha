@@ -4,10 +4,11 @@ import { userModel, courseModel, purchaseModel } from "../db.js";
 import jwt from "jsonwebtoken";
 import { JWT_USER_SECRET } from "../config.js";
 import { userMiddleware } from "../middleware/user.js";
+import { validateUser } from "../validation/user.validation.js";
 
 const userRouter = express.Router();
 
-userRouter.post('/signup', async function (req, res) {
+userRouter.post('/signup', validateUser, async function (req, res) {
   const { email, password, firstName, lastName } = req.body;
 
   try {

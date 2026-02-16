@@ -5,9 +5,10 @@ import jwt from "jsonwebtoken";
 import { JWT_ADMIN_SECRET } from "../config.js";
 import { courseModel } from "../db.js";
 import { adminMiddleware } from "../middleware/admin.js";
+import { validateAdmin } from "../validation/admin.validation.js";
 const adminRouter = express.Router();
 
-adminRouter.post('/signup', async function (req, res) {
+adminRouter.post('/signup', validateAdmin, async function (req, res) {
   const { email, password, firstName, lastName } = req.body;
   try {
     const Admin = await adminModel.findOne({ email });
