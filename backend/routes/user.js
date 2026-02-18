@@ -14,7 +14,7 @@ userRouter.post('/signup', validateUser, async function (req, res) {
   try {
     const User = await userModel.findOne({ email });
     if (User) {
-      res.status(403).json({
+      res.status(409).json({
         message: "user already exists"
       })
     }
