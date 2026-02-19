@@ -53,7 +53,7 @@ adminRouter.post('/signin', async function (req, res) {
       }, JWT_ADMIN_SECRET);
       res.status(200).json({
         message: "signin done",
-        token
+        token: token
       })
     }
   } catch (error) {

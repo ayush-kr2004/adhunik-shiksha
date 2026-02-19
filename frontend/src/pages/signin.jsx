@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useState } from "react";
+import api from "../axios/api";
 
 function Signin({ role }) {
     const [form, setForm] = useState({
         email: "",
         password: ""
     });
+    const [message, setMessage] = useState("");
 
     const handleChange = (e) => {
         setForm({
@@ -14,16 +16,15 @@ function Signin({ role }) {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-    };
-
-    const signin = async () => {
         try {
             const response = await api.post(`/${role}/signin`, form);
-            console.log(response.data);
+            console.log(response.data.message);
+            setMessage(response.data.message);
         } catch (error) {
-            console.log(error);
+            console.log(error.response?.data?.error);
+            setMessage(error.response?.data?.error);
         }
     };
     return (
@@ -33,7 +34,7 @@ function Signin({ role }) {
                     onSubmit={handleSubmit}
                     className="bg-white p-8 rounded-xl shadow-md w-96 space-y-4"
                 >
-                    <h2 className="text-2xl font-bold text-center">Signup</h2>
+                    <h2 className="text-2xl font-bold text-center">Signin</h2>
 
                     <input
                         type="email"
@@ -55,7 +56,7 @@ function Signin({ role }) {
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
                     >
-                        Sign Up
+                        Sign in
                     </button>
 
                     {message && (

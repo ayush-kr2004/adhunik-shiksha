@@ -57,7 +57,7 @@ userRouter.post('/signin', async function (req, res) {
       }, JWT_USER_SECRET);
       res.status(200).json({
         message: "signin done",
-        token
+        token: token
       })
     }
   } catch (error) {
